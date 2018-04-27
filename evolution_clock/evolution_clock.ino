@@ -152,6 +152,7 @@ void setup() {
       contIcon = 0;
     }
 
+
     contMinutes = now.second();
     lcd.print ("   ");
     lcd.setCursor(2, 1);
