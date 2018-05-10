@@ -44,9 +44,48 @@ uint8_t convertMinuteIndexSegment (uint8_t minute, uint8_t timeAdvance) {
   return indexSegment;
 }
 
+
+
+uint8_t decodeDecOutLCD(LiquidCrystal_I2C lcd, uint8_t indexSegLCD) {
+    if ( indexSegLCD > 3 ) {
+    return 255;
+    }
+    
+    switch (indexSegLCD) {
+      case 0:
+      lcd.write(4);
+      break;
+      
+      case 1:
+      lcd.write(5);
+      break;
+      
+      case 2:
+      lcd.write(6);
+      break;
+      
+      case 3:
+      lcd.write(7);
+      break;
+      
+      }
+}
+
+uint8_t decodeBinOutLCD(LiquidCrystal_I2C lcd, uint8_t indexUpper, uint8_t indexLower) {
+    if ( (indexUpper > 1) || (indexLower > 1)) {
+    return 255;
+  }
+  uint8_t indexSegLCD = indexUpper;
+  indexSegLCD = indexSegLCD < 1;
+  indexSegLCD = indexSegLCD | indexLower;
+
+  decodeDecOutLCD( lcd,  indexSegLCD);
+  
+}
+
 uint8_t showOutLCD (LiquidCrystal_I2C lcd, uint8_t indexHour, uint8_t indexMinute) {
   if ( (indexHour > 12) || (indexMinute > 12)) {
-    return -1;
+    return 255;
   }
   uint8_t indexHourMinute = indexHour*12 + indexMinute; 
   
@@ -417,6 +456,24 @@ uint8_t showOutLCD (LiquidCrystal_I2C lcd, uint8_t indexHour, uint8_t indexMinut
   }
   
 }
+/**********************************************************************
+
+                  888                             .d88      88b.   
+                  888                            d88P"      "Y88b  
+                  888                           d88P          Y88b 
+.d8888b   .d88b.  888888 888  888 88888b.       888            888 
+88K      d8P  Y8b 888    888  888 888 "88b      888            888 
+"Y8888b. 88888888 888    888  888 888  888      Y88b          d88P 
+     X88 Y8b.     Y88b.  Y88b 888 888 d88P       Y88b.      .d88P  
+ 88888P'  "Y8888   "Y888  "Y88888 88888P"         "Y88      88P"   
+                                  888                              
+                                  888                              
+                                  888                                                            
+                                    
+**********************************************************************/
+
+
+
 
 void setup() {
   
@@ -453,8 +510,15 @@ void setup() {
   lcd.home();
 
   lcd.print("Hello world...  ");
+  lcd.setCursor(0, 1);
+  decodeDecOutLCD( lcd,  0);
+  decodeDecOutLCD( lcd,  1);
+  decodeDecOutLCD( lcd,  2);
+  decodeDecOutLCD( lcd,  3);
   delay(1000);
-  lcd.home();
+  lcd.setCursor(0, 0);
+  lcd.print("                ");
+  lcd.setCursor(0, 1);
   lcd.print("                ");
   lcd.home();
 
@@ -568,6 +632,22 @@ void setup() {
   
 }
 
+/**********************************************************************
+
+
+888                                   .d88      88b.   
+888                                  d88P"      "Y88b  
+888                                 d88P          Y88b 
+888  .d88b.   .d88b.  88888b.       888            888 
+888 d88""88b d88""88b 888 "88b      888            888 
+888 888  888 888  888 888  888      Y88b          d88P 
+888 Y88..88P Y88..88P 888 d88P       Y88b.      .d88P  
+888  "Y88P"   "Y88P"  88888P"         "Y88      88P"   
+                      888                              
+                      888                              
+                      888                              
+ 
+**********************************************************************/
 
 void loop() {
   // put your main code here, to run repeatedly:
