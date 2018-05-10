@@ -16,10 +16,11 @@ uint8_t clockIcon3H[8] = {0x00, 0x00, 0x0e, 0x15, 0x17, 0x11, 0x0e, 0x00};
 uint8_t clockIcon6H[8] = {0x00, 0x00, 0x0e, 0x15, 0x15, 0x15, 0x0e, 0x00};
 uint8_t clockIcon9H[8] = {0x00, 0x00, 0x0e, 0x15, 0x1D, 0x11, 0x0e, 0x00};
 uint8_t clockIcon12H[8] = {0x00, 0x00, 0x0e, 0x15, 0x15, 0x11, 0x0e, 0x00};
-uint8_t outHour1Minute1 [8] = {0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F};
-uint8_t outHour1Minute0 [8] = {0x1F, 0x1F, 0x1F, 0x1F, 0x11, 0x11, 0x11, 0x1F};
-uint8_t outHour0Minute1 [8] = {0x1F, 0x11, 0x11, 0x11, 0x1F, 0x1F, 0x1F, 0x1F};
-uint8_t outHour0Minute0 [8] = {0x1F, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x1F};
+
+uint8_t outU0L0 [8] = {0x1F, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x1F};
+uint8_t outU0L1 [8] = {0x1F, 0x11, 0x11, 0x11, 0x1F, 0x1F, 0x1F, 0x1F};
+uint8_t outU1L0 [8] = {0x1F, 0x1F, 0x1F, 0x1F, 0x11, 0x11, 0x11, 0x1F};
+uint8_t outU1L1 [8] = {0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F};
 
 
 // Set the LCD address to 0x27 for a 16 chars and 2 line display
@@ -41,6 +42,380 @@ uint8_t convertMinuteIndexSegment (uint8_t minute, uint8_t timeAdvance) {
   }
   
   return indexSegment;
+}
+
+uint8_t showOutLCD (LiquidCrystal_I2C lcd, uint8_t indexHour, uint8_t indexMinute) {
+  if ( (indexHour > 12) || (indexMinute > 12)) {
+    return -1;
+  }
+  uint8_t indexHourMinute = indexHour*12 + indexMinute; 
+  
+  lcd.setCursor(0, 1);
+  lcd.print("  ");
+
+  switch (indexHourMinute) {
+    case 0:
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(5);
+    break;
+
+    case 1:
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(5);
+    lcd.write(4);
+    break;
+
+    case 2:
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(4);
+    break;
+
+    case 3:
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(4);
+    break;
+
+    case 4:
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(4);
+    break;
+
+    case 5:
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(4);
+    break;
+
+    case 6:
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(4);
+    break;
+
+    case 7:
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(4);
+    break;
+
+    case 8:
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(4);
+    break;
+
+    case 9:
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(4);
+    break;
+
+    case 10:
+    lcd.write(4);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(4);
+    break;
+
+    case 11:
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(4);
+    break;
+
+    case 12:
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(6);
+    lcd.write(5);
+    break;
+
+    case 13:
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(7);
+    lcd.write(4);
+    break;
+
+    case 14:
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(5);
+    lcd.write(7);
+    lcd.write(4);
+    break;
+
+    case 15:
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(7);
+    lcd.write(4);
+    break;
+
+    case 16:
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(7);
+    lcd.write(4);
+    break;
+
+    case 17:
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(7);
+    lcd.write(4);
+    break;
+
+    case 18:
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(7);
+    lcd.write(4);
+    break;
+
+    case 19:
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(7);
+    lcd.write(4);
+    break;
+
+    case 20:
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(7);
+    lcd.write(4);
+    break;
+
+    case 21:
+    lcd.write(4);
+    lcd.write(4);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(7);
+    lcd.write(4);
+    break;
+
+    case 22:
+    lcd.write(4);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(7);
+    lcd.write(4);
+    break;
+
+    case 23:
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(5);
+    lcd.write(7);
+    lcd.write(4);
+    break;
+    
+  }
+  
 }
 
 void setup() {
@@ -70,10 +445,10 @@ void setup() {
   lcd.createChar(1, clockIcon6H);
   lcd.createChar(2, clockIcon9H);
   lcd.createChar(3, clockIcon12H);
-  lcd.createChar(4, outHour1Minute1);
-  lcd.createChar(5, outHour1Minute0);
-  lcd.createChar(6, outHour0Minute1);
-  lcd.createChar(7, outHour0Minute0);
+  lcd.createChar(4, outU0L0);
+  lcd.createChar(5, outU0L1);
+  lcd.createChar(6, outU1L0);
+  lcd.createChar(7, outU1L1);
 
   lcd.home();
 
@@ -154,32 +529,36 @@ void setup() {
     
     Serial.println();
     
-    lcd.setCursor(0, 1);
-    lcd.write(contIcon);
+//    lcd.setCursor(0, 1);
+//    lcd.write(contIcon);
     contIcon ++;
-    if (contIcon > 7) {
+    if (contIcon > 3) {
       contIcon = 0;
     }
 
 
     contMinutes = now.second();
-    lcd.print ("   ");
-    lcd.setCursor(2, 1);
-    if (contMinutes < 10) {
-      lcd.print (0);
-    }
-    lcd.print (contMinutes);
-
-    lcd.print ("   ");
-    lcd.setCursor(5, 1);
-//    if (convertMinuteIndexSegment( contMinutes , 0) < 10) {
-      lcd.print ((convertMinuteIndexSegment( contMinutes , 0) < 10) ? "0" : "");
+    showOutLCD ( lcd, 0,  convertMinuteIndexSegment( contMinutes , 0));
+//
+//
+    
+//    lcd.print ("   ");
+//    lcd.setCursor(2, 1);
+//    if (contMinutes < 10) {
+//      lcd.print (0);
 //    }
-    lcd.print(convertMinuteIndexSegment( contMinutes , 0));
-//    contMinutes ++;
-    if (contMinutes > 59) {
-      contMinutes = 0;
-    }
+//    lcd.print (contMinutes);
+//
+//    lcd.print ("   ");
+//    lcd.setCursor(5, 1);
+////    if (convertMinuteIndexSegment( contMinutes , 0) < 10) {
+//      lcd.print ((convertMinuteIndexSegment( contMinutes , 0) < 10) ? "0" : "");
+////    }
+//    lcd.print(convertMinuteIndexSegment( contMinutes , 0));
+////    contMinutes ++;
+//    if (contMinutes > 59) {
+//      contMinutes = 0;
+//    }
     
 
     
