@@ -22,6 +22,8 @@ uint8_t outU0L1 [8] = {0x1F, 0x11, 0x11, 0x11, 0x1F, 0x1F, 0x1F, 0x1F};
 uint8_t outU1L0 [8] = {0x1F, 0x1F, 0x1F, 0x1F, 0x11, 0x11, 0x11, 0x1F};
 uint8_t outU1L1 [8] = {0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F};
 
+uint16_t outMapSeg [12] = {0x0800, 0x0C00, 0x0E00 , 0x0F00 , 0x0F80 , 0x0FC0 , 0x0FE0 , 0x0FF0 , 0x0FF8 , 0x0FFC , 0x0FFE , 0x0001 };
+
 
 // Set the LCD address to 0x27 for a 16 chars and 2 line display
 LiquidCrystal_I2C lcd(0x27, 16, 2);
@@ -83,14 +85,28 @@ uint8_t decodeBinOutLCD(LiquidCrystal_I2C lcd, uint8_t indexUpper, uint8_t index
   
 }
 
-uint8_t showOutLCD (LiquidCrystal_I2C lcd, uint8_t indexHour, uint8_t indexMinute) {
-  if ( (indexHour > 12) || (indexMinute > 12)) {
+uint8_t showOutLCD (LiquidCrystal_I2C lcd, uint8_t indexUpper, uint8_t indexLower) {
+  if ( (indexUpper > 12) || (indexLower > 12)) {
     return 255;
   }
-  uint8_t indexHourMinute = indexHour*12 + indexMinute; 
+  uint8_t indexHourMinute = indexUpper*12 + indexLower; 
   
   lcd.setCursor(0, 1);
   lcd.print("  ");
+  
+//  uint8_t contSegLCD = 0;
+//  uint8_t SegUpperLCD = 0;
+//  uint8_t SegLowerLCD = 0;
+//  uint16_t maskMapSeg = 0x0800;
+//
+//  for (contSegLCD = 0; contSegLCD < 12; contSegLCD++) {
+////    ( maskMapSeg > contSegLCD ) & SegLowerLCD;
+//    //  outMapSeg[indexUpper];
+//    //  outMapSeg[indexLower];
+//      decodeBinOutLCD( lcd,  0,  ( maskMapSeg > contSegLCD ) & outMapSeg[indexLower]);
+//  }
+ 
+//return 0;
 
   switch (indexHourMinute) {
     case 0:
