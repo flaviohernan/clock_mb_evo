@@ -34,10 +34,10 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);
  * 
  * 
 */
-uint8_t convertMinuteIndexSegment (uint8_t minute, uint8_t timeAdvance) {
+uint8_t convertMinuteIndexSegment (uint8_t minutes, uint8_t timeAdvance) {
   uint8_t indexSegment = 255; /* used to return */
 
-  indexSegment = (minute + timeAdvance) / 5;
+  indexSegment = (minutes + timeAdvance) / 5;
 
   if (indexSegment > 11)  {
     indexSegment = 0;
@@ -46,6 +46,21 @@ uint8_t convertMinuteIndexSegment (uint8_t minute, uint8_t timeAdvance) {
   return indexSegment;
 }
 
+uint8_t convertHourIndexSegment (uint8_t hours, uint8_t timeAdvance) {
+  uint8_t indexSegment = 255; /* used to return */
+
+  if (hours > 11) {
+    hours = hours - 12;
+  }
+
+  indexSegment = (hours + timeAdvance);
+
+  if (indexSegment > 11)  {
+    indexSegment = 0;
+  }
+  
+  return indexSegment;
+}
 
 
 uint8_t decodeDecOutLCD(LiquidCrystal_I2C lcd, uint8_t indexSegLCD) {
@@ -254,9 +269,13 @@ void setup() {
     }
 
 
-    contMinutes = now.second();
-    contHours = now.minute();
-    showOutLCD ( lcd, convertMinuteIndexSegment( contHours , 0),  convertMinuteIndexSegment( contMinutes , 0));
+//    contMinutes = now.second();
+//    contHours = now.minute();
+//    showOutLCD ( lcd, convertMinuteIndexSegment( contHours , 0),  convertMinuteIndexSegment( contMinutes , 0));
+
+    contMinutes = now.minute();
+    contHours = now.hour();
+    showOutLCD ( lcd, convertHourIndexSegment( contHours , 0),  convertMinuteIndexSegment( contMinutes , 0));
 //
 //
     
