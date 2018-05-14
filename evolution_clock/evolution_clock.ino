@@ -26,8 +26,8 @@ uint16_t outMapSeg [12] = {0x0001, 0x0800, 0x0C00, 0x0E00 , 0x0F00 , 0x0F80 , 0x
 
 
 // Set the LCD address to 0x27 for a 16 chars and 2 line display
-LiquidCrystal_I2C lcd(0x27, 16, 2);
-//LiquidCrystal_I2C lcd(0x3F, 16, 2);
+//LiquidCrystal_I2C lcd(0x27, 16, 2);
+LiquidCrystal_I2C lcd(0x3F, 16, 2);
 
 /*
  * 0 - 59 
@@ -224,7 +224,7 @@ void setup() {
         Serial.print(':');
         Serial.print(mynow.second(), DEC);
         Serial.println();
-        delay (1000);
+//        delay (1000);
     }
     lcd.setCursor(0, 0);
     DateTime now = rtc.now();
@@ -332,7 +332,7 @@ void setup() {
 
     
     
-    delay(1000);
+    delay(900);
   }
   
 }
