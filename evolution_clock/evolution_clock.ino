@@ -193,7 +193,39 @@ void setup() {
   uint8_t contMinutes = 0;
   uint8_t contHours = 0;
   
+  
   while(1) {
+
+    if(1) {
+       DateTime mynow = DateTime( 199, 12,01, 12,59,33);
+       String myString = "";
+       char receivedChar;
+
+       while (Serial.available() > 0) {
+        receivedChar = Serial.read();
+
+        if (receivedChar != '\n') {
+          myString.concat(receivedChar);
+        }
+       }
+       Serial.println(myString);
+       
+       Serial.print(mynow.year(), DEC);
+        Serial.print('/');
+        Serial.print(mynow.month(), DEC);
+        Serial.print('/');
+        Serial.print(mynow.day(), DEC);
+        Serial.print(" (");
+        Serial.print(daysOfTheWeek[mynow.dayOfTheWeek()]);
+        Serial.print(") ");
+        Serial.print(mynow.hour(), DEC);
+        Serial.print(':');
+        Serial.print(mynow.minute(), DEC);
+        Serial.print(':');
+        Serial.print(mynow.second(), DEC);
+        Serial.println();
+        delay (1000);
+    }
     lcd.setCursor(0, 0);
     DateTime now = rtc.now();
     Serial.print(now.year(), DEC);
