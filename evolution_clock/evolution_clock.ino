@@ -208,6 +208,44 @@ void SetParameter(RTC_DS3231 rtc) {
 
   if (commandType == "SETH") {
     // rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
+    nowDateTime = rtc.now();
+
+    Serial.println(StringDataReceived);
+    Serial.print(nowDateTime.year(), DEC);
+    Serial.print('/');
+    Serial.print(nowDateTime.month(), DEC);
+    Serial.print('/');
+    Serial.print(nowDateTime.day(), DEC);
+    Serial.print(" (");
+    Serial.print(daysOfTheWeek[nowDateTime.dayOfTheWeek()]);
+    Serial.print(") ");
+    Serial.print(nowDateTime.hour(), DEC);
+    Serial.print(':');
+    Serial.print(nowDateTime.minute(), DEC);
+    Serial.print(':');
+    Serial.print(nowDateTime.second(), DEC);
+    Serial.println();
+
+    aux = String (StringDataReceived[5]);
+    aux += String (StringDataReceived[6]);
+    Serial.println(aux);
+    Serial.println(aux.toInt());
+    IntDataArray[0] = aux.toInt(); //day
+    aux = String (StringDataReceived[8]);
+    aux += String (StringDataReceived[9]);
+//    aux = String ((char)StringDataReceived[8] + (char)StringDataReceived[9]);
+    Serial.println(aux);
+    IntDataArray[1] = aux.toInt(); //month
+    aux = String (StringDataReceived[11]);
+    aux += String (StringDataReceived[12]);
+//    aux = String ((char)StringDataReceived[11] + (char)StringDataReceived[12] + (char)StringDataReceived[13] + (char)StringDataReceived[14]);
+    Serial.println(aux);
+    IntDataArray[2] = aux.toInt(); //year
+    rtc.adjust(DateTime(nowDateTime.year(),nowDateTime.month(),nowDateTime.day() , IntDataArray[0], IntDataArray[1], IntDataArray[2]));
+
+    Serial.println(IntDataArray[0]);
+    Serial.println(IntDataArray[1]);
+    Serial.println(IntDataArray[2]);
   }
   if (commandType == "TEST") {
     
