@@ -26,8 +26,8 @@ uint16_t outMapSeg [12] = {0x0001, 0x0800, 0x0C00, 0x0E00 , 0x0F00 , 0x0F80 , 0x
 
 
 // Set the LCD address to 0x27 for a 16 chars and 2 line display
-//LiquidCrystal_I2C lcd(0x27, 16, 2);
-LiquidCrystal_I2C lcd(0x3F, 16, 2);
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+//LiquidCrystal_I2C lcd(0x3F, 16, 2);
 
 /*
  * 0 - 59 
@@ -123,6 +123,7 @@ return 0;
 String ReadSerialData() {
   String myString = "";
   char receivedChar;
+  uint8_t contChar = 0;
   
   while (Serial.available() > 0) {
     receivedChar = Serial.read();
@@ -133,6 +134,84 @@ String ReadSerialData() {
 
   return myString;
   
+}
+
+/*
+ * 
+ *  SETD 31/12/2018
+ *  SETH 14:50:10
+ *  
+ *  
+ */
+
+
+void SetParameter(RTC_DS3231 rtc) {
+  String StringDataReceived = "";
+  String commandType = "";
+  String aux = "";
+  uint16_t IntDataArray[10];
+  DateTime nowDateTime;
+  
+  StringDataReceived = ReadSerialData();
+  StringDataReceived.toUpperCase();
+  StringDataReceived [20];
+
+  uint8_t cont;
+  for (cont = 0;cont < 4;cont++) {
+    commandType.concat(StringDataReceived[cont]);
+  }
+
+  if (commandType == "SETD") {
+
+    nowDateTime = rtc.now();
+
+    Serial.println(StringDataReceived);
+    Serial.print(nowDateTime.year(), DEC);
+    Serial.print('/');
+    Serial.print(nowDateTime.month(), DEC);
+    Serial.print('/');
+    Serial.print(nowDateTime.day(), DEC);
+    Serial.print(" (");
+    Serial.print(daysOfTheWeek[nowDateTime.dayOfTheWeek()]);
+    Serial.print(") ");
+    Serial.print(nowDateTime.hour(), DEC);
+    Serial.print(':');
+    Serial.print(nowDateTime.minute(), DEC);
+    Serial.print(':');
+    Serial.print(nowDateTime.second(), DEC);
+    Serial.println();
+
+    aux = String (StringDataReceived[5]);
+    aux += String (StringDataReceived[6]);
+    Serial.println(aux);
+    Serial.println(aux.toInt());
+    IntDataArray[0] = aux.toInt(); //day
+    aux = String (StringDataReceived[8]);
+    aux += String (StringDataReceived[9]);
+//    aux = String ((char)StringDataReceived[8] + (char)StringDataReceived[9]);
+    Serial.println(aux);
+    IntDataArray[1] = aux.toInt(); //month
+    aux = String (StringDataReceived[11]);
+    aux += String (StringDataReceived[12]);
+    aux += String (StringDataReceived[13]);
+    aux += String (StringDataReceived[14]);
+//    aux = String ((char)StringDataReceived[11] + (char)StringDataReceived[12] + (char)StringDataReceived[13] + (char)StringDataReceived[14]);
+    Serial.println(aux);
+    IntDataArray[2] = aux.toInt(); //year
+    rtc.adjust(DateTime(IntDataArray[2], IntDataArray[1], IntDataArray[0], nowDateTime.hour(), nowDateTime.minute(), nowDateTime.second()));
+
+    Serial.println(IntDataArray[0]);
+    Serial.println(IntDataArray[1]);
+    Serial.println(IntDataArray[2]);
+     
+  }
+
+  if (commandType == "SETH") {
+    // rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
+  }
+  if (commandType == "TEST") {
+    
+  }
 }
 /**********************************************************************
 
@@ -225,7 +304,8 @@ void setup() {
 //        }
 //       }
 //       Serial.println(myString);
-        Serial.print(ReadSerialData());
+//        Serial.print(ReadSerialData());
+        SetParameter(rtc);
        
        Serial.print(mynow.year(), DEC);
         Serial.print('/');
