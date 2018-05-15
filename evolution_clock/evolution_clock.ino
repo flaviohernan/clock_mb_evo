@@ -118,6 +118,22 @@ uint8_t showOutLCD (LiquidCrystal_I2C lcd, uint8_t indexUpper, uint8_t indexLowe
 return 0;
 
 }
+
+
+String ReadSerialData() {
+  String myString = "";
+  char receivedChar;
+  
+  while (Serial.available() > 0) {
+    receivedChar = Serial.read();
+    if (receivedChar != '\n') {
+      myString.concat(receivedChar);
+      }
+  }
+
+  return myString;
+  
+}
 /**********************************************************************
 
                   888                             .d88      88b.   
@@ -198,17 +214,18 @@ void setup() {
 
     if(1) {
        DateTime mynow = DateTime( 199, 12,01, 12,59,33);
-       String myString = "";
-       char receivedChar;
-
-       while (Serial.available() > 0) {
-        receivedChar = Serial.read();
-
-        if (receivedChar != '\n') {
-          myString.concat(receivedChar);
-        }
-       }
-       Serial.println(myString);
+//       String myString = "";
+//       char receivedChar;
+//
+//       while (Serial.available() > 0) {
+//        receivedChar = Serial.read();
+//
+//        if (receivedChar != '\n') {
+//          myString.concat(receivedChar);
+//        }
+//       }
+//       Serial.println(myString);
+        Serial.print(ReadSerialData());
        
        Serial.print(mynow.year(), DEC);
         Serial.print('/');
