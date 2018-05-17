@@ -314,38 +314,6 @@ void setup() {
   
   while(1) {
 
-    if(1) {
-       DateTime mynow = DateTime( 199, 12,01, 12,59,33);
-//       String myString = "";
-//       char receivedChar;
-//
-//       while (Serial.available() > 0) {
-//        receivedChar = Serial.read();
-//
-//        if (receivedChar != '\n') {
-//          myString.concat(receivedChar);
-//        }
-//       }
-//       Serial.println(myString);
-//        Serial.print(ReadSerialData());
-        SetParameter(rtc);
-       
-       Serial.print(mynow.year(), DEC);
-        Serial.print('/');
-        Serial.print(mynow.month(), DEC);
-        Serial.print('/');
-        Serial.print(mynow.day(), DEC);
-        Serial.print(" (");
-        Serial.print(daysOfTheWeek[mynow.dayOfTheWeek()]);
-        Serial.print(") ");
-        Serial.print(mynow.hour(), DEC);
-        Serial.print(':');
-        Serial.print(mynow.minute(), DEC);
-        Serial.print(':');
-        Serial.print(mynow.second(), DEC);
-        Serial.println();
-//        delay (1000);
-    }
     lcd.setCursor(0, 0);
     DateTime now = rtc.now();
     Serial.print(now.year(), DEC);
@@ -394,24 +362,7 @@ void setup() {
     Serial.print(now.unixtime() / 86400L);
     Serial.println("d");
     
-    // calculate a date which is 7 days and 30 seconds into the future
-    DateTime future (now + TimeSpan(7,12,30,6));
-    
-    Serial.print(" now + 7d + 30s: ");
-    Serial.print(future.year(), DEC);
-    Serial.print('/');
-    Serial.print(future.month(), DEC);
-    Serial.print('/');
-    Serial.print(future.day(), DEC);
-    Serial.print(' ');
-    Serial.print(future.hour(), DEC);
-    Serial.print(':');
-    Serial.print(future.minute(), DEC);
-    Serial.print(':');
-    Serial.print(future.second(), DEC);
-    Serial.println();
-    
-    Serial.println();
+   
     
 //    lcd.setCursor(0, 1);
 //    lcd.write(contIcon);
@@ -428,31 +379,10 @@ void setup() {
     contMinutes = now.minute();
     contHours = now.hour();
     showOutLCD ( lcd, convertHourIndexSegment( contHours , 0),  convertMinuteIndexSegment( contMinutes , 0));
-//
-//
+ 
     
-//    lcd.print ("   ");
-//    lcd.setCursor(2, 1);
-//    if (contMinutes < 10) {
-//      lcd.print (0);
-//    }
-//    lcd.print (contMinutes);
-//
-//    lcd.print ("   ");
-//    lcd.setCursor(5, 1);
-////    if (convertMinuteIndexSegment( contMinutes , 0) < 10) {
-//      lcd.print ((convertMinuteIndexSegment( contMinutes , 0) < 10) ? "0" : "");
-////    }
-//    lcd.print(convertMinuteIndexSegment( contMinutes , 0));
-////    contMinutes ++;
-//    if (contMinutes > 59) {
-//      contMinutes = 0;
-//    }
-    
-
-    
-    
-    delay(900);
+   
+    delay(800);
   }
   
 }
