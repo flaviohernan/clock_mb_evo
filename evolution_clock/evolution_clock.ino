@@ -226,9 +226,6 @@ uint8_t SetParameter(RTC_DS3231 rtc) {
     
     rtc.adjust(DateTime(nowDateTime.year(),nowDateTime.month(),nowDateTime.day() , IntDataArray[0], IntDataArray[1], IntDataArray[2]));
 
-    Serial.println(IntDataArray[0]);
-    Serial.println(IntDataArray[1]);
-    Serial.println(IntDataArray[2]);
   }
   if (commandType == "TEST") {
     
@@ -314,6 +311,8 @@ void setup() {
   
   while(1) {
 
+    SetParameter(rtc);
+    
     lcd.setCursor(0, 0);
     DateTime now = rtc.now();
     Serial.print(now.year(), DEC);
