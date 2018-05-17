@@ -145,7 +145,7 @@ String ReadSerialData() {
  */
 
 
-void SetParameter(RTC_DS3231 rtc) {
+uint8_t SetParameter(RTC_DS3231 rtc) {
   String StringDataReceived = "";
   String commandType = "";
   String aux = "";
@@ -165,39 +165,29 @@ void SetParameter(RTC_DS3231 rtc) {
 
     nowDateTime = rtc.now();
 
-    Serial.println(StringDataReceived);
-    Serial.print(nowDateTime.year(), DEC);
-    Serial.print('/');
-    Serial.print(nowDateTime.month(), DEC);
-    Serial.print('/');
-    Serial.print(nowDateTime.day(), DEC);
-    Serial.print(" (");
-    Serial.print(daysOfTheWeek[nowDateTime.dayOfTheWeek()]);
-    Serial.print(") ");
-    Serial.print(nowDateTime.hour(), DEC);
-    Serial.print(':');
-    Serial.print(nowDateTime.minute(), DEC);
-    Serial.print(':');
-    Serial.print(nowDateTime.second(), DEC);
-    Serial.println();
-
     aux = String (StringDataReceived[5]);
     aux += String (StringDataReceived[6]);
-    Serial.println(aux);
-    Serial.println(aux.toInt());
+
     IntDataArray[0] = aux.toInt(); //day
+    if ( (IntDataArray[0] < 1) || (IntDataArray[0] > 31) ) {
+      return EXIT_FAILURE;
+    }
     aux = String (StringDataReceived[8]);
     aux += String (StringDataReceived[9]);
-//    aux = String ((char)StringDataReceived[8] + (char)StringDataReceived[9]);
-    Serial.println(aux);
+
     IntDataArray[1] = aux.toInt(); //month
+    if ( (IntDataArray[1] < 1) || (IntDataArray[1] > 12) ) {
+      return EXIT_FAILURE;
+    }
     aux = String (StringDataReceived[11]);
     aux += String (StringDataReceived[12]);
     aux += String (StringDataReceived[13]);
     aux += String (StringDataReceived[14]);
-//    aux = String ((char)StringDataReceived[11] + (char)StringDataReceived[12] + (char)StringDataReceived[13] + (char)StringDataReceived[14]);
-    Serial.println(aux);
+
     IntDataArray[2] = aux.toInt(); //year
+    if ( (IntDataArray[2] < 2000) || (IntDataArray[2] > 2099) ) {
+      return EXIT_FAILURE;
+    }
     rtc.adjust(DateTime(IntDataArray[2], IntDataArray[1], IntDataArray[0], nowDateTime.hour(), nowDateTime.minute(), nowDateTime.second()));
 
     Serial.println(IntDataArray[0]);
@@ -210,37 +200,30 @@ void SetParameter(RTC_DS3231 rtc) {
     // rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
     nowDateTime = rtc.now();
 
-    Serial.println(StringDataReceived);
-    Serial.print(nowDateTime.year(), DEC);
-    Serial.print('/');
-    Serial.print(nowDateTime.month(), DEC);
-    Serial.print('/');
-    Serial.print(nowDateTime.day(), DEC);
-    Serial.print(" (");
-    Serial.print(daysOfTheWeek[nowDateTime.dayOfTheWeek()]);
-    Serial.print(") ");
-    Serial.print(nowDateTime.hour(), DEC);
-    Serial.print(':');
-    Serial.print(nowDateTime.minute(), DEC);
-    Serial.print(':');
-    Serial.print(nowDateTime.second(), DEC);
-    Serial.println();
-
     aux = String (StringDataReceived[5]);
     aux += String (StringDataReceived[6]);
-    Serial.println(aux);
-    Serial.println(aux.toInt());
-    IntDataArray[0] = aux.toInt(); //day
+    IntDataArray[0] = aux.toInt(); //hour
+
+    if ( (IntDataArray[0] < 0) || (IntDataArray[0] > 23) ) {
+      return EXIT_FAILURE;
+    }
+    
     aux = String (StringDataReceived[8]);
     aux += String (StringDataReceived[9]);
-//    aux = String ((char)StringDataReceived[8] + (char)StringDataReceived[9]);
-    Serial.println(aux);
-    IntDataArray[1] = aux.toInt(); //month
+    IntDataArray[1] = aux.toInt(); //minute
+
+    if ( (IntDataArray[1] < 0) || (IntDataArray[1] > 59) ) {
+      return EXIT_FAILURE;
+    }
+    
     aux = String (StringDataReceived[11]);
     aux += String (StringDataReceived[12]);
-//    aux = String ((char)StringDataReceived[11] + (char)StringDataReceived[12] + (char)StringDataReceived[13] + (char)StringDataReceived[14]);
-    Serial.println(aux);
-    IntDataArray[2] = aux.toInt(); //year
+    IntDataArray[2] = aux.toInt(); //second
+
+    if ( (IntDataArray[2] < 0) || (IntDataArray[2] > 59) ) {
+      return EXIT_FAILURE;
+    }
+    
     rtc.adjust(DateTime(nowDateTime.year(),nowDateTime.month(),nowDateTime.day() , IntDataArray[0], IntDataArray[1], IntDataArray[2]));
 
     Serial.println(IntDataArray[0]);
@@ -250,6 +233,8 @@ void SetParameter(RTC_DS3231 rtc) {
   if (commandType == "TEST") {
     
   }
+
+  return EXIT_SUCCESS;
 }
 /**********************************************************************
 
