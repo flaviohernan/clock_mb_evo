@@ -4,10 +4,11 @@
 /* Date and time functions using a DS3231 RTC connected via I2C and Wire lib
  *  
  */
-#include <Wire.h>
+
 #include "RTClib.h"
 
 RTC_DS3231 rtc;
+DateTime now;
 
 char daysOfTheWeek[7][12] = {"Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sabado"};
 
@@ -247,10 +248,6 @@ uint8_t SetParameter(RTC_DS3231& rtc) {
       return EXIT_FAILURE;
     }
     rtc.adjust(DateTime(IntDataArray[2], IntDataArray[1], IntDataArray[0], nowDateTime.hour(), nowDateTime.minute(), nowDateTime.second()));
-
-    Serial.println(IntDataArray[0]);
-    Serial.println(IntDataArray[1]);
-    Serial.println(IntDataArray[2]);
      
   }
 
@@ -441,7 +438,6 @@ void setup() {
                       888                              
  
 **********************************************************************/
-DateTime now;
 
 void loop() {
   
@@ -450,7 +446,7 @@ void loop() {
   if (!digitalRead(2)) {
 
     rtc.clearFlagAlarm1();
-    
+
     digitalWrite(LEDboard,!digitalRead(LEDboard));
 
     now = rtc.now();
