@@ -301,14 +301,17 @@ uint8_t SetParameter(RTC_DS3231 rtc) {
                                     
 **********************************************************************/
 
-
+#define LEDboard 13
+#define pinInt 2
 
 
 void setup() {
+
+  pinMode(LEDboard, OUTPUT);
+  pinMode (pinInt, INPUT_PULLUP);
+//  pinMode (pinInt, INPUT);
   
   Serial.begin(9600);
-  
-  delay(2000); // wait for console opening
 
   if ( rtc.begin()) {
     Serial.println("Couldn't find RTC");
@@ -338,16 +341,9 @@ void setup() {
 
   lcd.home();
 
-  lcd.print("Hello world...  ");
+  lcd.print("Clock Evolution ");
   lcd.setCursor(0, 1);
-  decodeDecOutLCD( lcd,  0);
-  decodeDecOutLCD( lcd,  1);
-  decodeDecOutLCD( lcd,  2);
-  decodeDecOutLCD( lcd,  3);
-  decodeBinOutLCD( lcd,  0,  0);
-  decodeBinOutLCD( lcd,  0,  1);
-  decodeBinOutLCD( lcd,  1,  0);
-  decodeBinOutLCD( lcd,  1,  1);
+  lcd.print("Ver 1.0 06/2018 ");
   
   delay(3000);
   lcd.setCursor(0, 0);
@@ -364,6 +360,8 @@ void setup() {
   while(1) {
 
     SetParameter(rtc);
+
+    digitalWrite(LEDboard,!digitalRead(LEDboard));
     
     lcd.setCursor(0, 0);
     DateTime now = rtc.now();
@@ -401,31 +399,11 @@ void setup() {
     lcd.print((now.month() < 10) ? "0" : "" );
     lcd.print(now.month(), DEC);
     
-//    lcd.print('/');
-//    lcd.print(now.year(), DEC);
-    
-    
-    
-    
-    Serial.print(" since midnight 1/1/1970 = ");
-    Serial.print(now.unixtime());
-    Serial.print("s = ");
-    Serial.print(now.unixtime() / 86400L);
-    Serial.println("d");
-    
-   
-    
-//    lcd.setCursor(0, 1);
-//    lcd.write(contIcon);
+
     contIcon ++;
     if (contIcon > 3) {
       contIcon = 0;
     }
-
-
-//    contMinutes = now.second();
-//    contHours = now.minute();
-//    showOutLCD ( lcd, convertMinuteIndexSegment( contHours , 0),  convertMinuteIndexSegment( contMinutes , 0));
 
     contMinutes = now.minute();
     contHours = now.hour();
