@@ -9,7 +9,7 @@
 
 RTC_DS3231 rtc;
 
-char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+char daysOfTheWeek[7][12] = {"Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sabado"};
 
 
 //LCD custom character
@@ -176,14 +176,19 @@ String ReadSerialData() {
   String myString = "";
   char receivedChar;
   uint8_t contChar = 0;
-  
-  while (Serial.available() > 0) {
-    receivedChar = Serial.read();
-    if (receivedChar != '\n') {
-      myString.concat(receivedChar);
-      }
-  }
 
+  if (Serial.available() > 4) {
+    
+    while (Serial.available() > 0) {
+      
+      receivedChar = Serial.read();
+      
+      if (receivedChar != '\n') {
+        myString.concat(receivedChar);
+
+      }
+    }
+  }
   return myString;
   
 }
@@ -197,7 +202,7 @@ String ReadSerialData() {
  */
 
 
-uint8_t SetParameter(RTC_DS3231 rtc) {
+uint8_t SetParameter(RTC_DS3231& rtc) {
   String StringDataReceived = "";
   String commandType = "";
   String aux = "";
@@ -207,6 +212,7 @@ uint8_t SetParameter(RTC_DS3231 rtc) {
   StringDataReceived = ReadSerialData();
   StringDataReceived.toUpperCase();
   StringDataReceived [20];
+  // Serial.println(StringDataReceived);
 
   uint8_t cont;
   for (cont = 0;cont < 4;cont++) {
@@ -285,6 +291,51 @@ uint8_t SetParameter(RTC_DS3231 rtc) {
 
   return EXIT_SUCCESS;
 }
+
+void showDateTimeLCD (RTC_DS3231& rtc, DateTime& now) {
+    lcd.setCursor(0, 0);
+
+    // now = rtc.now();
+
+    lcd.print((now.hour() < 10) ? "0" : "" );
+    lcd.print(now.hour(), DEC);
+    lcd.print(':');
+    lcd.print((now.minute() < 10) ? "0" : "" );
+    lcd.print(now.minute(), DEC);
+    lcd.print(':');
+    lcd.print((now.second() < 10) ? "0" : "" );
+    lcd.print(now.second(), DEC);
+    lcd.print(" ");
+
+    lcd.write(now.second() & 0x03);
+    
+    lcd.print(" ");
+    lcd.print((now.day() < 10) ? "0" : "" );
+    lcd.print(now.day(), DEC);
+    lcd.print('/');
+    lcd.print((now.month() < 10) ? "0" : "" );
+    lcd.print(now.month(), DEC);
+}
+
+void showDateTimeSerial ( DateTime& now) {
+
+    Serial.print(now.hour(), DEC);
+    Serial.print(':');
+    Serial.print(now.minute(), DEC);
+    Serial.print(':');
+    Serial.print(now.second(), DEC);
+    Serial.print(' ');
+    Serial.print(now.day(), DEC);
+    Serial.print('/');
+    Serial.print(now.month(), DEC);
+    Serial.print('/');
+    Serial.print(now.year(), DEC);
+    Serial.print(" (");
+    Serial.print(daysOfTheWeek[now.dayOfTheWeek()]);
+    Serial.print(")");
+    Serial.println();
+
+}
 /**********************************************************************
 
                   888                             .d88      88b.   
@@ -326,6 +377,24 @@ void setup() {
     // January 21, 2014 at 3am you would call:
     // rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
   }
+
+  // January 21, 2014 at 3am you would call:
+  // rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
+  DateTime nowAlarm1;
+  nowAlarm1 = DateTime (F(__DATE__), F(__TIME__));
+  rtc.disableAlarm1();
+  rtc.clearFlagAlarm1();
+  /*
+  DS3231_ALARM_TYPES_t :
+    DS3231_ALM1_EVERY_SECOND      //every_second
+    DS3231_ALM1_MATCH_SECONDS     //match seconds
+    DS3231_ALM1_MATCH_MINUTES     //match minutes *and* seconds
+    DS3231_ALM1_MATCH_HOURS       //match hours *and* minutes, seconds
+    DS3231_ALM1_MATCH_DATE        //match date *and* hours, minutes, seconds
+    DS3231_ALM1_MATCH_DAY         //match day *and* hours, minutes, seconds
+  */
+  rtc.adjustAlarm1(nowAlarm1, DS3231_ALM1_EVERY_SECOND);
+  rtc.enableAlarm1();
   
   lcd.begin();
   lcd.backlight();
@@ -351,70 +420,10 @@ void setup() {
   lcd.setCursor(0, 1);
   lcd.print("                ");
   lcd.home();
-
-  uint8_t contIcon = 0;
-  uint8_t contMinutes = 0;
-  uint8_t contHours = 0;
   
-  
-  while(1) {
-
-    SetParameter(rtc);
-
-    digitalWrite(LEDboard,!digitalRead(LEDboard));
-    
-    lcd.setCursor(0, 0);
-    DateTime now = rtc.now();
-    Serial.print(now.year(), DEC);
-    Serial.print('/');
-    Serial.print(now.month(), DEC);
-    Serial.print('/');
-    Serial.print(now.day(), DEC);
-    Serial.print(" (");
-    Serial.print(daysOfTheWeek[now.dayOfTheWeek()]);
-    Serial.print(") ");
-    Serial.print(now.hour(), DEC);
-    Serial.print(':');
-    Serial.print(now.minute(), DEC);
-    Serial.print(':');
-    Serial.print(now.second(), DEC);
-    Serial.println();
-
-    lcd.print((now.hour() < 10) ? "0" : "" );
-    lcd.print(now.hour(), DEC);
-    lcd.print(':');
-    lcd.print((now.minute() < 10) ? "0" : "" );
-    lcd.print(now.minute(), DEC);
-    lcd.print(':');
-    lcd.print((now.second() < 10) ? "0" : "" );
-    lcd.print(now.second(), DEC);
-    lcd.print(" ");
-    
-    lcd.write(contIcon);
-    
-    lcd.print(" ");
-    lcd.print((now.day() < 10) ? "0" : "" );
-    lcd.print(now.day(), DEC);
-    lcd.print('/');
-    lcd.print((now.month() < 10) ? "0" : "" );
-    lcd.print(now.month(), DEC);
-    
-
-    contIcon ++;
-    if (contIcon > 3) {
-      contIcon = 0;
-    }
-
-    contMinutes = now.minute();
-    contHours = now.hour();
-    showOutLCD ( lcd, convertHourIndexSegment( contHours , 0),  convertMinuteIndexSegment( contMinutes , 0));
- 
-    
-   
-    delay(800);
-  }
   
 }
+
 
 /**********************************************************************
 
@@ -432,8 +441,27 @@ void setup() {
                       888                              
  
 **********************************************************************/
+DateTime now;
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  
+  SetParameter(rtc);
+  
+  if (!digitalRead(2)) {
 
+    rtc.clearFlagAlarm1();
+    
+    digitalWrite(LEDboard,!digitalRead(LEDboard));
+
+    now = rtc.now();
+
+    showDateTimeLCD (rtc, now);
+
+    showDateTimeSerial ( now );
+
+    showOutLCD ( lcd, convertHourIndexSegment( now.hour() , 0),  convertMinuteIndexSegment( now.minute() , 0));
+    
+    }
+
+  delay(50);
 }
