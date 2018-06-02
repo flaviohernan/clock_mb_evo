@@ -12,16 +12,21 @@ RTC_DS3231 rtc;
 char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 
 
+//LCD custom character
+// clock icon
 uint8_t clockIcon3H[8] = {0x00, 0x00, 0x0e, 0x15, 0x17, 0x11, 0x0e, 0x00};
 uint8_t clockIcon6H[8] = {0x00, 0x00, 0x0e, 0x15, 0x15, 0x15, 0x0e, 0x00};
 uint8_t clockIcon9H[8] = {0x00, 0x00, 0x0e, 0x15, 0x1D, 0x11, 0x0e, 0x00};
 uint8_t clockIcon12H[8] = {0x00, 0x00, 0x0e, 0x15, 0x15, 0x11, 0x0e, 0x00};
 
+//LCD custom character
+// output indicator
 uint8_t outU0L0 [8] = {0x1F, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x1F};
 uint8_t outU0L1 [8] = {0x1F, 0x11, 0x11, 0x11, 0x1F, 0x1F, 0x1F, 0x1F};
 uint8_t outU1L0 [8] = {0x1F, 0x1F, 0x1F, 0x1F, 0x11, 0x11, 0x11, 0x1F};
 uint8_t outU1L1 [8] = {0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F};
 
+//output bitmask
 uint16_t outMapSeg [12] = {0x0001, 0x0800, 0x0C00, 0x0E00 , 0x0F00 , 0x0F80 , 0x0FC0 , 0x0FE0 , 0x0FF0 , 0x0FF8 , 0x0FFC , 0x0FFE  };
 
 
@@ -33,8 +38,16 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);
  * 0 - 59 
  * 
  * 
+ * Recebe MINUTO e converte para um index
+ * saidas
+ * 0 a 4 = 0
+ * 5 a 9 = 1
+ * 10 a 14 = 2
+ * 
+ * o retorno dessa fincao, sera usado como indice do vetor outMapSeg[]
 */
 uint8_t convertMinuteIndexSegment (uint8_t minutes, uint8_t timeAdvance) {
+  
   uint8_t indexSegment = 255; /* used to return */
 
   indexSegment = (minutes + timeAdvance) / 5;
@@ -46,6 +59,16 @@ uint8_t convertMinuteIndexSegment (uint8_t minutes, uint8_t timeAdvance) {
   return indexSegment;
 }
 
+/*
+ * 
+ * Recebe HORA e converte para um index
+ * saidas
+ * 0 a 4 = 0
+ * 5 a 9 = 1
+ * 10 a 14 = 2
+ * 
+ *o retorno dessa fincao, sera usado como indice do vetor outMapSeg[]
+ */
 uint8_t convertHourIndexSegment (uint8_t hours, uint8_t timeAdvance) {
   uint8_t indexSegment = 255; /* used to return */
 
@@ -63,6 +86,11 @@ uint8_t convertHourIndexSegment (uint8_t hours, uint8_t timeAdvance) {
 }
 
 
+/*
+ * Usada para escrever no LCD os caracteres que representam o estado das saidas
+ * recebe um número de 0 a 3
+ * 
+ */
 uint8_t decodeDecOutLCD(LiquidCrystal_I2C lcd, uint8_t indexSegLCD) {
     if ( indexSegLCD > 3 ) {
     return 255;
@@ -88,6 +116,18 @@ uint8_t decodeDecOutLCD(LiquidCrystal_I2C lcd, uint8_t indexSegLCD) {
       }
 }
 
+/*
+ * Funcao responsável por unir os bit de de cada saida.
+ * 0 e 0 = 0
+ * 0 e 1 = 1
+ * 1 e 0 = 2
+ * 1 e 1 = 3
+ * 
+ * Recebe 0 ou 1 no campo indexUpper
+ * Recebe 0 ou 1 no campo indexLower
+ * 
+ * O retorno dessa funcao sera usado como parametro para decodeDecOutLCD
+ */
 uint8_t decodeBinOutLCD(LiquidCrystal_I2C lcd, uint8_t indexUpper, uint8_t indexLower) {
     if ( (indexUpper > 1) || (indexLower > 1)) {
     return 255;
@@ -100,6 +140,10 @@ uint8_t decodeBinOutLCD(LiquidCrystal_I2C lcd, uint8_t indexUpper, uint8_t index
   
 }
 
+/*
+ * Funcao usada para exibir no LCD, o estado de todas as saidas
+ * 
+ */
 uint8_t showOutLCD (LiquidCrystal_I2C lcd, uint8_t indexUpper, uint8_t indexLower) {
   if ( (indexUpper > 12) || (indexLower > 12)) {
     return 255;
@@ -110,6 +154,11 @@ uint8_t showOutLCD (LiquidCrystal_I2C lcd, uint8_t indexUpper, uint8_t indexLowe
   
   uint8_t contSegLCD = 0;
 
+/*
+ * para exibir o estado de cada saida no LCD
+ * 
+ * eh escrito de forma reversa no LCD
+ */
   for (contSegLCD = 12; contSegLCD > 0; contSegLCD--) {
 
       decodeBinOutLCD( lcd,  (1 & (outMapSeg[indexUpper] >> (contSegLCD - 1))),  (1 & (outMapSeg[indexLower] >> (contSegLCD - 1))));
@@ -120,6 +169,9 @@ return 0;
 }
 
 
+/*
+ * Le uma string pela Serial, ate o caracter de nove linha
+ */
 String ReadSerialData() {
   String myString = "";
   char receivedChar;
@@ -136,7 +188,7 @@ String ReadSerialData() {
   
 }
 
-/*
+/* 
  * 
  *  SETD 31/12/2018
  *  SETH 14:50:10
@@ -258,7 +310,7 @@ void setup() {
   
   delay(2000); // wait for console opening
 
-  if (! rtc.begin()) {
+  if ( rtc.begin()) {
     Serial.println("Couldn't find RTC");
     while (1);
   }
