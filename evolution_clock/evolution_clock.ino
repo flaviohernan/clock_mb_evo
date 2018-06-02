@@ -316,21 +316,28 @@ void showDateTimeLCD (RTC_DS3231& rtc, DateTime& now) {
 
 void showDateTimeSerial ( DateTime& now) {
 
+    Serial.print((now.hour() < 10) ? "0" : "" );
     Serial.print(now.hour(), DEC);
     Serial.print(':');
+    Serial.print((now.minute() < 10) ? "0" : "" );
     Serial.print(now.minute(), DEC);
     Serial.print(':');
+    Serial.print((now.second() < 10) ? "0" : "" );
     Serial.print(now.second(), DEC);
     Serial.print(' ');
+    Serial.print((now.day() < 10) ? "0" : "" );
     Serial.print(now.day(), DEC);
     Serial.print('/');
+    Serial.print((now.month() < 10) ? "0" : "" );
     Serial.print(now.month(), DEC);
     Serial.print('/');
     Serial.print(now.year(), DEC);
     Serial.print(" (");
     Serial.print(daysOfTheWeek[now.dayOfTheWeek()]);
-    Serial.print(")");
-    Serial.println();
+    Serial.print(") ");
+    Serial.print (rtc.getTemperature());
+    Serial.println ("°C");
+    // Serial.println();
 
 }
 /**********************************************************************
