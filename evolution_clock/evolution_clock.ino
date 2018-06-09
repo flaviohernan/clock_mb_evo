@@ -175,18 +175,18 @@ return 0;
  * 
  */
 uint8_t showOutPins ( uint8_t indexUpper, uint8_t indexLower) {
-  // if ( (indexUpper > 12) || (indexLower > 12)) {
-  //   return EXIT_FAILURE;
-  // }
+  if ( (indexUpper > 12) || (indexLower > 12)) {
+    return EXIT_FAILURE;
+  }
   uint8_t aux = 0;
   uint8_t xua = 0;
   #ifdef __AVR_ATmega328P__
-
+/*
   //PORTD 4 a 7 = S1 a S4
   //PORTB 0 a 3 = S5 a S8
   //PORTC 0 a 3 = S9 a S12
   // {0x0001, 0x0800, 0x0C00, 0x0E00 , 0x0F00 , 0x0F80 , 0x0FC0 , 0x0FE0 , 0x0FF0 , 0x0FF8 , 0x0FFC , 0x0FFE  };
-/*
+
 0X80 = PD7 = S1
 0X40 = PD6 = S2
 0X20 = PD5 = S3
@@ -203,72 +203,40 @@ uint8_t showOutPins ( uint8_t indexUpper, uint8_t indexLower) {
 0X08 = PC3 = S12
 */
 
-Serial.println(outMapSeg[indexLower], HEX);
-  PORTD = PIND & 0x0F;
+  uint8_t cont = 0;
+
+  
   aux = 0x00F0 & (outMapSeg[indexLower] >> 4);
 
-  xua |= 0x0010 & aux;
-  xua = xua << 1;
-  xua |= 0x0010 & (aux >> 1);
-  xua = xua << 1;
-  xua |= 0x0010 & (aux >> 2);
-  xua = xua << 1;
-  xua |= 0x0010 & (aux >> 3);
-  // xua = xua << 1;
+  for (xua = cont = 0; cont < 4; cont++) {
+    xua = xua << 1;
+    xua |= 0x0010 & (aux >> cont);
+  }
 
+  PORTD = PIND & 0x0F;
   PORTD |= xua;
 
-  aux = 0;
-  xua = 0;
-
-  PORTB = PINB & 0xF0;
+  
   aux = 0x000F & (outMapSeg[indexLower] >> 4);
 
-  xua |= 0x0001 & aux;
-  xua = xua << 1;
-  xua |= 0x0001 & (aux >> 1);
-  xua = xua << 1;
-  xua |= 0x0001 & (aux >> 2);
-  xua = xua << 1;
-  xua |= 0x0001 & (aux >> 3);
-  // xua = xua << 1;
+  for (xua = cont = 0; cont < 4; cont++) {
+    xua = xua << 1;
+    xua |= 0x0001 & (aux >> cont);
+  }
 
+  PORTB = PINB & 0xF0;
   PORTB |= xua;
 
-  aux = 0;
-  xua = 0;
-
-  PORTC = PINC & 0xF0;
   aux = 0x000F & outMapSeg[indexLower];
 
-  xua |= 0x0001 & aux;
-  xua = xua << 1;
-  xua |= 0x0001 & (aux >> 1);
-  xua = xua << 1;
-  xua |= 0x0001 & (aux >> 2);
-  xua = xua << 1;
-  xua |= 0x0001 & (aux >> 3);
-  // xua = xua << 1;
+  for (xua = cont = 0; cont < 4; cont++) {
+    xua = xua << 1;
+    xua |= 0x0001 & (aux >> cont);
+  }
 
+  PORTC = PINC & 0xF0;
   PORTC |= xua;
-
-  // PORTD |= 0x00F0 & (outMapSeg[indexLower] >> 4);
-  // PORTB = PINB & 0xF0;
-  // PORTB |= 0x0F & (outMapSeg[indexLower] >> 4);
-  // PORTC = PINC & 0xF0;
-  // PORTC |= 0x0F & outMapSeg[indexLower];
-
-
-  // PORTD |= 0xF0;
-
-  // if ((PIND & 0xF0) == 0xF0 ) {
-  //   PORTD &= ~0xF0;
-  // } else {
-  //   PORTD |= 0xF0;
-  // }
   
-
-
   #endif
   
 
