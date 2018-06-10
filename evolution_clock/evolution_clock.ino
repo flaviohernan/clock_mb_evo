@@ -777,7 +777,7 @@ void loop() {
 
       contTestLED++;
 
-      if(contTestLED  > 12) {
+      if(contTestLED  > 11) {
         contTest--; // contador de vezes de teste
         contTestLED = 0; // contador dos LEDs
       }
