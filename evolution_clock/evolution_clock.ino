@@ -11,6 +11,8 @@
 RTC_DS3231 rtc;
 DateTime now;
 
+uint8_t contTest = 0; //apenas para teste dos LEDs
+
 #define LEDTEST
 // #undef LEDTEST
 
@@ -453,6 +455,7 @@ uint8_t SetParameter(RTC_DS3231& rtc) {
 
   }
   if (commandType == "TEST") {
+    contTest = 12;
     
   }
 
@@ -729,6 +732,7 @@ void setup() {
  
 **********************************************************************/
 
+
 void loop() {
   
   SetParameter(rtc);
@@ -746,18 +750,27 @@ void loop() {
 
     showDateTimeSerial ( now );
 
-    // normal mode
-    showOutLCD ( lcd, convertHourIndexSegment( now.hour() , 0),  convertMinuteIndexSegment( now.minute() , 0));
+    if(contTest) {
 
-    // showOutLCD ( lcd, convertMinuteIndexSegment( now.second() , 0),  convertMinuteIndexSegment( now.second() , 0));
+      showOutLCD ( lcd, 12 -  contTest,  12 -  contTest);
+      showOutPins ( 12 -  contTest,  12 -  contTest);
 
-    // normal mode
-    showOutPins ( convertHourIndexSegment( now.hour() , 0), convertMinuteIndexSegment( now.minute() , 0));
+      contTest--;
+    } else {
+
+      // normal mode
+      showOutLCD ( lcd, convertHourIndexSegment( now.hour() , 0),  convertMinuteIndexSegment( now.minute() , 0));
+
+      // showOutLCD ( lcd, convertMinuteIndexSegment( now.second() , 0),  convertMinuteIndexSegment( now.second() , 0));
+
+      // normal mode
+      showOutPins ( convertHourIndexSegment( now.hour() , 0), convertMinuteIndexSegment( now.minute() , 0));
 
 
-    // showOutPins ( convertMinuteIndexSegment( now.second() , 0), convertMinuteIndexSegment( now.second() , 0));
-    
+      // showOutPins ( convertMinuteIndexSegment( now.second() , 0), convertMinuteIndexSegment( now.second() , 0));
     }
+
+  }
 
   delay(50);
 
