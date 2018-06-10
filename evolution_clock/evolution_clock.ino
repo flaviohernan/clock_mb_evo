@@ -14,7 +14,7 @@ DateTime now;
 uint8_t contTest = 0; //apenas para teste dos LEDs
 
 #define LEDTEST
-// #undef LEDTEST
+#undef LEDTEST
 
 char daysOfTheWeek[7][12] = {"Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sabado"};
 
@@ -178,6 +178,9 @@ return 0;
 
 /*
  * Funcao usada para controlar o estado logico dos pinos
+ *
+ * Nao modificar essa funcao, pois e' dependente do hardware
+ * Esta' otimizada para a placa LED_CLOCK REV A1
  * 
  */
 uint8_t showOutPins ( uint8_t indexUpper, uint8_t indexLower) {
@@ -314,13 +317,6 @@ uint8_t showOutPins ( uint8_t indexUpper, uint8_t indexLower) {
 
   PORTH = 0x00FF & (outMapSeg[indexUpper] >> 4);
 
-  // for (xua = cont = 0; cont < 8; cont++) {
-  //   xua = xua << 1;
-  //   xua |= 0x0001 & (aux >> cont);
-  // }
-
-  // PORTH = xua;
-
   aux = 0x000F & (outMapSeg[indexUpper]);
 
   for (xua = cont = 0; cont < 4; cont++) {
@@ -343,7 +339,8 @@ return EXIT_SUCCESS;
 
 
 /*
- * Le uma string pela Serial, ate o caracter de nove linha
+ * Le uma string pela Serial, ate o caracter de nova linha '\n'
+ * E' obrigato'rio enviar '\n' para a placa LED_CLOCK
  */
 String ReadSerialData() {
   String myString = "";
@@ -367,11 +364,17 @@ String ReadSerialData() {
 }
 
 /* 
- * 
+ * Funcao para configurar o RTC pela serial (USB)
+ * Exemplos de configuracao
  *  SETD 31/12/2018
  *  SETH 14:50:10
+ *
+ *  Comando para verificar se as saidas (LEDs)
+ *  estao funcionado corretamente
+ *
+ *  TEST
  *  
- *  
+ *  Todos os comandos devem terminar com '\n' (nova linha)
  */
 
 
@@ -455,13 +458,21 @@ uint8_t SetParameter(RTC_DS3231& rtc) {
 
   }
   if (commandType == "TEST") {
-    contTest = 12;
+    contTest = 12; // contador do teste dos LEDs
     
   }
 
   return EXIT_SUCCESS;
 }
 
+
+/*
+ *  Exibe a Hora, um icone de relo'gio e a Data
+ *  na primeira linha do LCD
+ *
+ *
+ *
+*/
 void showDateTimeLCD (RTC_DS3231& rtc, DateTime& now) {
     lcd.setCursor(0, 0);
 
@@ -477,7 +488,7 @@ void showDateTimeLCD (RTC_DS3231& rtc, DateTime& now) {
     lcd.print(now.second(), DEC);
     lcd.print(" ");
 
-    lcd.write(now.second() & 0x03);
+    lcd.write(now.second() & 0x03); // icone do relogio
     
     lcd.print(" ");
     lcd.print((now.day() < 10) ? "0" : "" );
@@ -487,6 +498,12 @@ void showDateTimeLCD (RTC_DS3231& rtc, DateTime& now) {
     lcd.print(now.month(), DEC);
 }
 
+/*
+ *  Exibe a Hora, a Data, dia da semana e a temperatura do chip
+ *  pela serial (USB)
+ *
+ *
+*/
 void showDateTimeSerial ( DateTime& now) {
 
     Serial.print((now.hour() < 10) ? "0" : "" );
@@ -529,7 +546,7 @@ void showDateTimeSerial ( DateTime& now) {
                                     
 **********************************************************************/
 
-#define LEDboard 13
+#define LEDboard 13 // LED da placa, pisca a cada segundo
 
 
 
@@ -761,13 +778,9 @@ void loop() {
       // normal mode
       showOutLCD ( lcd, convertHourIndexSegment( now.hour() , 0),  convertMinuteIndexSegment( now.minute() , 0));
 
-      // showOutLCD ( lcd, convertMinuteIndexSegment( now.second() , 0),  convertMinuteIndexSegment( now.second() , 0));
-
       // normal mode
       showOutPins ( convertHourIndexSegment( now.hour() , 0), convertMinuteIndexSegment( now.minute() , 0));
 
-
-      // showOutPins ( convertMinuteIndexSegment( now.second() , 0), convertMinuteIndexSegment( now.second() , 0));
     }
 
   }
