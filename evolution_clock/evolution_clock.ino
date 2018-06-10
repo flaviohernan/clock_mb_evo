@@ -291,6 +291,23 @@ uint8_t showOutPins ( uint8_t indexUpper, uint8_t indexLower) {
   PORTC = PINC & 0xF0;
   PORTC |= xua;
 
+  /*
+  Hora
+
+  PF3 SEG12
+  PF2 SEG11
+  PF1 SEG10
+  PF0 SEG9
+
+  PH0 SEG8 
+  PH1 SEG7
+  PH2 SEG6
+  PH3 SEG5
+  PH4 SEG4
+  PH5 SEG3
+  PH6 SEG2
+  PH7 SEG1
+  */
 
   #endif
   
@@ -539,10 +556,34 @@ void setup() {
   */
 
   DDRC |= 0X0F;
-  PORTC = 0X00;
+  PORTC &= ~0X0F;
 
   DDRL = 0xFF;
   PORTL = 0x00;
+
+  /*
+  Hora
+
+  PF3 SEG12
+  PF2 SEG11
+  PF1 SEG10
+  PF0 SEG9
+
+  PH0 SEG8 
+  PH1 SEG7
+  PH2 SEG6
+  PH3 SEG5
+  PH4 SEG4
+  PH5 SEG3
+  PH6 SEG2
+  PH7 SEG1
+  */
+
+  DDRF |= 0x0F;
+  PORTF &= ~0X0F;
+
+  DDRH = 0xFF;
+  PORTH = 0x00;
 
     #ifdef LEDTEST
 
@@ -553,12 +594,23 @@ void setup() {
     }
     PORTL = 0X00;
 
-    for (cont = 0; cont <= 4; cont++) {
+    for (cont = 0; cont < 4; cont++) {
       PORTC = 0x01 << cont;
       delay (200);
     }
-
     PORTC &= ~0x0F;
+
+    for (cont = 0; cont < 8; cont++) {
+      PORTH = 0x80 >> cont;
+      delay (200);
+    }
+    PORTH = 0x00;
+
+    for (cont = 0; cont < 4; cont++) {
+      PORTF = 0x01 << cont;
+      delay (200);
+    }
+    PORTF &= ~0x0F;
 
     #endif
 
