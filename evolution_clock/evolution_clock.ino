@@ -10,6 +10,9 @@
 RTC_DS3231 rtc;
 DateTime now;
 
+#define LEDTEST
+// #undef LEDTEST
+
 char daysOfTheWeek[7][12] = {"Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sabado"};
 
 
@@ -178,8 +181,11 @@ uint8_t showOutPins ( uint8_t indexUpper, uint8_t indexLower) {
   if ( (indexUpper > 12) || (indexLower > 12)) {
     return EXIT_FAILURE;
   }
+
   uint8_t aux = 0;
   uint8_t xua = 0;
+  uint8_t cont = 0;
+
   #ifdef __AVR_ATmega328P__
 /*
   //PORTD 4 a 7 = S1 a S4
@@ -203,7 +209,7 @@ uint8_t showOutPins ( uint8_t indexUpper, uint8_t indexLower) {
 0X08 = PC3 = S12
 */
 
-  uint8_t cont = 0;
+  
 
   
   aux = 0x00F0 & (outMapSeg[indexLower] >> 4);
@@ -237,6 +243,55 @@ uint8_t showOutPins ( uint8_t indexUpper, uint8_t indexLower) {
   PORTC = PINC & 0xF0;
   PORTC |= xua;
   
+  #endif
+
+  #ifdef __AVR_ATmega2560__
+
+  
+
+  /*
+
+  0x0001, 0x0800, 0x0C00, 0x0E00 , 0x0F00 , 0x0F80 ,
+
+   0x0FC0 , 0x0FE0 , 0x0FF0 , 0x0FF8 , 0x0FFC , 0x0FFE
+
+  minutos 
+  PC3 SEG12
+  PC2 SEG11
+  PC1 SEG10
+  PC0 SEG9
+
+  PL7 SEG8
+  PL6 SEG7
+  PL5 SEG6
+  PL4 SEG5
+  PL3 SEG4
+  PL2 SEG3
+  PL1 SEG2
+  PL0 SEG1
+  
+  */
+
+  aux = 0x00FF & (outMapSeg[indexLower] >> 4);
+
+  for (xua = cont = 0; cont < 8; cont++) {
+    xua = xua << 1;
+    xua |= 0x0001 & (aux >> cont);
+  }
+
+  PORTL = xua;
+
+  aux = 0x000F & (outMapSeg[indexLower]);
+
+  for (xua = cont = 0; cont < 4; cont++) {
+    xua = xua << 1;
+    xua |= 0x0001 & (aux >> cont);
+  }
+
+  PORTC = PINC & 0xF0;
+  PORTC |= xua;
+
+
   #endif
   
 
@@ -459,6 +514,55 @@ void setup() {
   PORTC |= 0x0F;
   delay(500);
   PORTC &= ~0x0F;
+
+  #endif
+
+  #ifdef __AVR_ATmega2560__
+
+  
+  /*
+  minutos 
+  PC3 SEG12
+  PC2 SEG11
+  PC1 SEG10
+  PC0 SEG9
+
+  PL7 SEG8
+  PL6 SEG7
+  PL5 SEG6
+  PL4 SEG5
+  PL3 SEG4
+  PL2 SEG3
+  PL1 SEG2
+  PL0 SEG1
+  
+  */
+
+  DDRC |= 0X0F;
+  PORTC = 0X00;
+
+  DDRL = 0xFF;
+  PORTL = 0x00;
+
+    #ifdef LEDTEST
+
+    uint8_t cont;
+    for (cont = 0; cont < 8; cont++) {
+      PORTL = 0x01 << cont;
+      delay (200);
+    }
+    PORTL = 0X00;
+
+    for (cont = 0; cont <= 4; cont++) {
+      PORTC = 0x01 << cont;
+      delay (200);
+    }
+
+    PORTC &= ~0x0F;
+
+    #endif
+
+
 
   #endif
 
