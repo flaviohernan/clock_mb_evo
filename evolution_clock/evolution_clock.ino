@@ -309,6 +309,27 @@ uint8_t showOutPins ( uint8_t indexUpper, uint8_t indexLower) {
   PH7 SEG1
   */
 
+  PORTH = 0x00FF & (outMapSeg[indexUpper] >> 4);
+
+  // for (xua = cont = 0; cont < 8; cont++) {
+  //   xua = xua << 1;
+  //   xua |= 0x0001 & (aux >> cont);
+  // }
+
+  // PORTH = xua;
+
+  aux = 0x000F & (outMapSeg[indexUpper]);
+
+  for (xua = cont = 0; cont < 4; cont++) {
+    xua = xua << 1;
+    xua |= 0x0001 & (aux >> cont);
+  }
+
+  PORTF = PINF & 0xF0;
+  PORTF |= xua;
+
+
+
   #endif
   
 
@@ -718,9 +739,20 @@ void loop() {
 
     showDateTimeSerial ( now );
 
+    // normal mode
     // showOutLCD ( lcd, convertHourIndexSegment( now.hour() , 0),  convertMinuteIndexSegment( now.minute() , 0));
-    showOutLCD ( lcd, convertHourIndexSegment( now.hour() , 0),  convertMinuteIndexSegment( now.second() , 0));
-    showOutPins ( convertHourIndexSegment( now.hour() , 0), convertMinuteIndexSegment( now.second() , 0));
+
+    showOutLCD ( lcd, convertMinuteIndexSegment( now.second() , 0),  convertMinuteIndexSegment( now.second() , 0));
+
+    // teste1
+    //showOutLCD ( lcd, convertHourIndexSegment( now.hour() , 0),  convertMinuteIndexSegment( now.minute() , 0));
+
+
+    // normal mode
+    //showOutPins ( convertHourIndexSegment( now.hour() , 0), convertMinuteIndexSegment( now.second() , 0));
+
+
+    showOutPins ( convertMinuteIndexSegment( now.second() , 0), convertMinuteIndexSegment( now.second() , 0));
     
     }
 
