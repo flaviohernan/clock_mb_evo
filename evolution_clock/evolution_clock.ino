@@ -1,3 +1,4 @@
+#include  <avr/wdt.h>
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 
@@ -526,12 +527,15 @@ void showDateTimeSerial ( DateTime& now) {
 **********************************************************************/
 
 #define LEDboard 13
-#define pinInt 2
+
 
 
 void setup() {
+  wdt_enable(WDTO_8S); //Função que ativa wdt
 
   #ifdef __AVR_ATmega328P__
+
+  #define pinInt 2
 
   //PORTD 4 a 7 = S1 a S4
   //PORTB 0 a 3 = S5 a S8
@@ -557,7 +561,7 @@ void setup() {
 
   #ifdef __AVR_ATmega2560__
 
-  
+  #define pinInt 2
   /*
   minutos 
   PC3 SEG12
@@ -639,6 +643,8 @@ void setup() {
 
   #endif
 
+  wdt_reset();
+
   pinMode(LEDboard, OUTPUT);
   pinMode (pinInt, INPUT_PULLUP);
 //  pinMode (pinInt, INPUT);
@@ -695,14 +701,14 @@ void setup() {
   lcd.setCursor(0, 1);
   lcd.print("Ver 1.0 06/2018 ");
   
-  delay(3000);
+  delay(2000);
   lcd.setCursor(0, 0);
   lcd.print("                ");
   lcd.setCursor(0, 1);
   lcd.print("                ");
   lcd.home();
   
-  
+  wdt_reset();
 }
 
 
@@ -727,7 +733,8 @@ void loop() {
   
   SetParameter(rtc);
   
-  if (!digitalRead(2)) {
+  if (!digitalRead(pinInt)) {
+    wdt_reset();
 
     rtc.clearFlagAlarm1();
 
@@ -740,21 +747,18 @@ void loop() {
     showDateTimeSerial ( now );
 
     // normal mode
-    // showOutLCD ( lcd, convertHourIndexSegment( now.hour() , 0),  convertMinuteIndexSegment( now.minute() , 0));
+    showOutLCD ( lcd, convertHourIndexSegment( now.hour() , 0),  convertMinuteIndexSegment( now.minute() , 0));
 
-    showOutLCD ( lcd, convertMinuteIndexSegment( now.second() , 0),  convertMinuteIndexSegment( now.second() , 0));
-
-    // teste1
-    //showOutLCD ( lcd, convertHourIndexSegment( now.hour() , 0),  convertMinuteIndexSegment( now.minute() , 0));
-
+    // showOutLCD ( lcd, convertMinuteIndexSegment( now.second() , 0),  convertMinuteIndexSegment( now.second() , 0));
 
     // normal mode
-    //showOutPins ( convertHourIndexSegment( now.hour() , 0), convertMinuteIndexSegment( now.second() , 0));
+    showOutPins ( convertHourIndexSegment( now.hour() , 0), convertMinuteIndexSegment( now.minute() , 0));
 
 
-    showOutPins ( convertMinuteIndexSegment( now.second() , 0), convertMinuteIndexSegment( now.second() , 0));
+    // showOutPins ( convertMinuteIndexSegment( now.second() , 0), convertMinuteIndexSegment( now.second() , 0));
     
     }
 
   delay(50);
+
 }
