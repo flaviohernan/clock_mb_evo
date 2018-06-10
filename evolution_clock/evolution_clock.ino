@@ -11,7 +11,10 @@
 RTC_DS3231 rtc;
 DateTime now;
 
-uint8_t contTest = 0; //apenas para teste dos LEDs
+uint8_t contTestLED, contTest = 0; //apenas para teste dos LEDs
+
+#define _CONTTEST 2 // usar para definir o numero de testes a serem realizados
+
 
 #define LEDTEST
 #undef LEDTEST
@@ -458,7 +461,7 @@ uint8_t SetParameter(RTC_DS3231& rtc) {
 
   }
   if (commandType == "TEST") {
-    contTest = 12; // contador do teste dos LEDs
+    contTest = _CONTTEST; // contador do teste dos LEDs
     
   }
 
@@ -769,10 +772,15 @@ void loop() {
 
     if(contTest) {
 
-      showOutLCD ( lcd, 12 -  contTest,  12 -  contTest);
-      showOutPins ( 12 -  contTest,  12 -  contTest);
+      showOutLCD ( lcd,  contTestLED,  contTestLED);
+      showOutPins (  contTestLED,  contTestLED);
 
-      contTest--;
+      contTestLED++;
+
+      if(contTestLED  > 12) {
+        contTest--; // contador de vezes de teste
+        contTestLED = 0; // contador dos LEDs
+      }
     } else {
 
       // normal mode
