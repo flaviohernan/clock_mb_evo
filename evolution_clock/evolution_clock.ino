@@ -247,13 +247,13 @@ uint8_t showOutPins ( uint8_t indexUpper, uint8_t indexLower, float temp) {
 
   if ( temp <= TEMPLEDON )
   {
-    outputState = true; // enable
+    outputState = true; // enable output flag
   }
 
-  if (( temp >= TEMPLEDOFF ) && ( outputState == true )) 
+  if ( (temp >= TEMPLEDOFF) || (outputState == false) ) 
   {
     indexLower = indexUpper = 12; // disable all outputs
-    outputState = false; // disable
+    outputState = false; // disable output flag
   }
 
   #ifdef __AVR_ATmega328P__
