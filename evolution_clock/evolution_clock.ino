@@ -8,17 +8,35 @@
 
 #include "RTClib.h"
 
+// #define TEMPFANDOFF 30.0  
+// #define TEMPFANON 50.0  
+
+#define TEMPLEDOFF 70.0 // o circuito nao deve chegar a essa temperatura, as saidas serao desligadas
+#define TEMPLEDON 60.0  // temperatura aceita'vel no funcionamento normal
+
+#define _CONTTEST 2 // usar para definir o numero de testes a serem realizados
+
+
+#define LEDTEST 
+#undef LEDTEST // comentar essa linha para habilitar o teste inicial do LEDs
+
+
 RTC_DS3231 rtc;
 DateTime now;
 
 uint8_t contTestLED, contTest = 0; //apenas para teste dos LEDs
 
-#define _CONTTEST 2 // usar para definir o numero de testes a serem realizados
+/*
+ * na primeita iteracao o sistema deve manter desligado os LEDs, 
+ * somente apos ler a temperatura do RTC, o circuito 
+ * deve acionar os LEDs
+*/
+float rtcTemp = TEMPLEDOFF; 
 
 
-#define LEDTEST
-#undef LEDTEST
-
+/*
+ * Sera' exibido somente na serial
+*/
 char daysOfTheWeek[7][12] = {"Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sabado"};
 
 
@@ -36,13 +54,16 @@ uint8_t outU0L1 [8] = {0x1F, 0x11, 0x11, 0x11, 0x1F, 0x1F, 0x1F, 0x1F};
 uint8_t outU1L0 [8] = {0x1F, 0x1F, 0x1F, 0x1F, 0x11, 0x11, 0x11, 0x1F};
 uint8_t outU1L1 [8] = {0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F};
 
+/*
 //output bitmask S1 S2 S3 ... S11 S12
-uint16_t outMapSeg [12] = {0x0001, 0x0800, 0x0C00, 0x0E00 , 0x0F00 , 0x0F80 , 0x0FC0 , 0x0FE0 , 0x0FF0 , 0x0FF8 , 0x0FFC , 0x0FFE  };
+outMapSeg[12] disable outputs (turn off)
+*/
+uint16_t outMapSeg [13] = {0x0001, 0x0800, 0x0C00, 0x0E00 , 0x0F00 , 0x0F80 , 0x0FC0 , 0x0FE0 , 0x0FF0 , 0x0FF8 , 0x0FFC , 0x0FFE , 0x0000  };
 
 
 // Set the LCD address to 0x27 for a 16 chars and 2 line display
-LiquidCrystal_I2C lcd(0x27, 16, 2);
-//LiquidCrystal_I2C lcd(0x3F, 16, 2);
+// LiquidCrystal_I2C lcd(0x27, 16, 2);
+LiquidCrystal_I2C lcd(0x3F, 16, 2);
 
 /*
  * 0 - 59 
@@ -154,13 +175,13 @@ uint8_t decodeBinOutLCD(LiquidCrystal_I2C lcd, uint8_t indexUpper, uint8_t index
  * Funcao usada para exibir no LCD, o estado de todas as saidas
  * 
  */
-uint8_t showOutLCD (LiquidCrystal_I2C lcd, uint8_t indexUpper, uint8_t indexLower) {
+uint8_t showOutLCD (LiquidCrystal_I2C lcd, uint8_t indexUpper, uint8_t indexLower, float temp) {
   if ( (indexUpper > 12) || (indexLower > 12)) {
     return 255;
   }
   
   lcd.setCursor(0, 1);
-  lcd.print("  ");
+  // lcd.print("  ");
   
   uint8_t contSegLCD = 0;
 
@@ -173,6 +194,10 @@ uint8_t showOutLCD (LiquidCrystal_I2C lcd, uint8_t indexUpper, uint8_t indexLowe
 
       decodeBinOutLCD( lcd,  (1 & (outMapSeg[indexUpper] >> (contSegLCD - 1))),  (1 & (outMapSeg[indexLower] >> (contSegLCD - 1))));
   }
+
+  lcd.print(" ");
+  lcd.print((uint8_t)temp);
+  lcd.write(0xDF); // symbol °, LCD ROM code A00
  
 return 0;
 
@@ -762,9 +787,10 @@ void loop() {
 
     rtc.clearFlagAlarm1();
 
-    digitalWrite(LEDboard,!digitalRead(LEDboard));
+    digitalWrite(LEDboard,!digitalRead(LEDboard)); // system heartbeat
 
-    now = rtc.now();
+    now = rtc.now(); // read RTC
+    rtcTemp = rtc.getTemperature(); // read RTC temperature
 
     showDateTimeLCD (rtc, now);
 
@@ -772,7 +798,7 @@ void loop() {
 
     if(contTest) {
 
-      showOutLCD ( lcd,  contTestLED,  contTestLED);
+      showOutLCD ( lcd,  contTestLED,  contTestLED, rtcTemp);
       showOutPins (  contTestLED,  contTestLED);
 
       contTestLED++;
@@ -784,7 +810,7 @@ void loop() {
     } else {
 
       // normal mode
-      showOutLCD ( lcd, convertHourIndexSegment( now.hour() , 0),  convertMinuteIndexSegment( now.minute() , 0));
+      showOutLCD ( lcd, convertHourIndexSegment( now.hour() , 0),  convertMinuteIndexSegment( now.minute() , 0), rtcTemp);
 
       // normal mode
       showOutPins ( convertHourIndexSegment( now.hour() , 0), convertMinuteIndexSegment( now.minute() , 0));
@@ -793,6 +819,6 @@ void loop() {
 
   }
 
-  delay(50);
+  delay(100);
 
 }
