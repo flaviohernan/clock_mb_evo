@@ -11,8 +11,8 @@
 // #define TEMPFANDOFF 30.0  
 // #define TEMPFANON 50.0  
 
-#define TEMPLEDOFF 50.0 // o circuito nao deve chegar a essa temperatura, as saidas serao desligadas
-#define TEMPLEDON 60.0  // temperatura aceita'vel no funcionamento normal
+#define TEMPLEDOFF 50.0 // o circuito nao deve chegar a temperatura de 70°, as saidas serao desligadas
+#define TEMPLEDON 45.0  // temperatura de 60° aceita'vel no funcionamento normal
 
 #define _CONTTEST 2 // usar para definir o numero de testes a serem realizados
 
@@ -26,6 +26,7 @@ DateTime now;
 
 uint8_t contTestLED, contTest = 0; //apenas para teste dos LEDs
 
+
 /*
  * na primeita iteracao o sistema deve manter desligado os LEDs, 
  * somente apos ler a temperatura do RTC, o circuito 
@@ -33,6 +34,13 @@ uint8_t contTestLED, contTest = 0; //apenas para teste dos LEDs
 */
 float rtcTemp = TEMPLEDOFF; 
 
+/*
+ * Guarda o estado das saidas, caso alcance a temperature de 70°
+ * essa variavel fica como FALSE.
+ * caso a temperatura diminua para 60° ela fica em TRUE
+ *
+*/
+uint8_t outputState = true; 
 
 /*
  * Sera' exibido somente na serial
@@ -59,7 +67,7 @@ uint8_t outU1L1 [8] = {0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F};
 outMapSeg[12] disable all outputs (turn off)
 outMapSeg[13] enable all outputs (turn on)
 */
-uint16_t outMapSeg [13] = {0x0001, 0x0800, 0x0C00, 0x0E00 , 0x0F00 , 0x0F80 , 0x0FC0 , 0x0FE0 , 0x0FF0 , 0x0FF8 , 0x0FFC , 0x0FFE , 0x0000 , 0x0FFF };
+uint16_t outMapSeg [14] = {0x0001, 0x0800, 0x0C00, 0x0E00 , 0x0F00 , 0x0F80 , 0x0FC0 , 0x0FE0 , 0x0FF0 , 0x0FF8 , 0x0FFC , 0x0FFE , 0x0000 , 0x0FFF };
 
 
 // Set the LCD address to 0x27 for a 16 chars and 2 line display
@@ -190,8 +198,10 @@ uint8_t showOutLCD (LiquidCrystal_I2C lcd, uint8_t indexUpper, uint8_t indexLowe
    * Se o sistema estiver com temperatura alta ,
    * maior que 70°C, vai mostrar uma mensagem no LCD
    * "Alta Temp"
+   * ou se anteriormente a maxima temperatura havia 
+   * sido alcancada
   */
-  if (temp >= TEMPLEDOFF)
+  if (( temp >= TEMPLEDOFF ) || ( outputState == false ))
   {
 
     lcd.print("Alta Temp   ");
@@ -226,7 +236,7 @@ return 0;
  * Esta' otimizada para a placa LED_CLOCK REV A1
  * 
  */
-uint8_t showOutPins ( uint8_t indexUpper, uint8_t indexLower) {
+uint8_t showOutPins ( uint8_t indexUpper, uint8_t indexLower, float temp) {
   if ( (indexUpper > 12) || (indexLower > 12)) {
     return EXIT_FAILURE;
   }
@@ -234,6 +244,17 @@ uint8_t showOutPins ( uint8_t indexUpper, uint8_t indexLower) {
   uint8_t aux = 0;
   uint8_t xua = 0;
   uint8_t cont = 0;
+
+  if ( temp <= TEMPLEDON )
+  {
+    outputState = true; // enable
+  }
+
+  if (( temp >= TEMPLEDOFF ) && ( outputState == true )) 
+  {
+    indexLower = indexUpper = 12; // disable all outputs
+    outputState = false; // disable
+  }
 
   #ifdef __AVR_ATmega328P__
 /*
@@ -814,7 +835,7 @@ void loop() {
     if(contTest) {
 
       showOutLCD ( lcd,  contTestLED,  contTestLED, rtcTemp);
-      showOutPins (  contTestLED,  contTestLED);
+      showOutPins (  contTestLED,  contTestLED, rtcTemp);
 
       contTestLED++;
 
@@ -828,7 +849,7 @@ void loop() {
       showOutLCD ( lcd, convertHourIndexSegment( now.hour() , 0),  convertMinuteIndexSegment( now.minute() , 0), rtcTemp);
 
       // normal mode
-      showOutPins ( convertHourIndexSegment( now.hour() , 0), convertMinuteIndexSegment( now.minute() , 0));
+      showOutPins ( convertHourIndexSegment( now.hour() , 0), convertMinuteIndexSegment( now.minute() , 0), rtcTemp);
 
     }
 
