@@ -11,7 +11,7 @@
 // #define TEMPFANDOFF 30.0  
 // #define TEMPFANON 50.0  
 
-#define TEMPLEDOFF 70.0 // o circuito nao deve chegar a essa temperatura, as saidas serao desligadas
+#define TEMPLEDOFF 50.0 // o circuito nao deve chegar a essa temperatura, as saidas serao desligadas
 #define TEMPLEDON 60.0  // temperatura aceita'vel no funcionamento normal
 
 #define _CONTTEST 2 // usar para definir o numero de testes a serem realizados
@@ -56,9 +56,10 @@ uint8_t outU1L1 [8] = {0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F};
 
 /*
 //output bitmask S1 S2 S3 ... S11 S12
-outMapSeg[12] disable outputs (turn off)
+outMapSeg[12] disable all outputs (turn off)
+outMapSeg[13] enable all outputs (turn on)
 */
-uint16_t outMapSeg [13] = {0x0001, 0x0800, 0x0C00, 0x0E00 , 0x0F00 , 0x0F80 , 0x0FC0 , 0x0FE0 , 0x0FF0 , 0x0FF8 , 0x0FFC , 0x0FFE , 0x0000  };
+uint16_t outMapSeg [13] = {0x0001, 0x0800, 0x0C00, 0x0E00 , 0x0F00 , 0x0F80 , 0x0FC0 , 0x0FE0 , 0x0FF0 , 0x0FF8 , 0x0FFC , 0x0FFE , 0x0000 , 0x0FFF };
 
 
 // Set the LCD address to 0x27 for a 16 chars and 2 line display
@@ -185,15 +186,29 @@ uint8_t showOutLCD (LiquidCrystal_I2C lcd, uint8_t indexUpper, uint8_t indexLowe
   
   uint8_t contSegLCD = 0;
 
-/*
- * para exibir o estado de cada saida no LCD
- * 
- * eh escrito de forma reversa no LCD
- */
-  for (contSegLCD = 12; contSegLCD > 0; contSegLCD--) {
+  /*
+   * Se o sistema estiver com temperatura alta ,
+   * maior que 70°C, vai mostrar uma mensagem no LCD
+   * "Alta Temp"
+  */
+  if (temp >= TEMPLEDOFF)
+  {
+
+    lcd.print("Alta Temp   ");
+
+  } else {
+      /*
+      * para exibir o estado de cada saida no LCD
+      * 
+      * eh escrito de forma reversa no LCD
+      */
+      for (contSegLCD = 12; contSegLCD > 0; contSegLCD--) {
 
       decodeBinOutLCD( lcd,  (1 & (outMapSeg[indexUpper] >> (contSegLCD - 1))),  (1 & (outMapSeg[indexLower] >> (contSegLCD - 1))));
+
+      }
   }
+
 
   lcd.print(" ");
   lcd.print((uint8_t)temp);
