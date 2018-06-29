@@ -11,8 +11,8 @@
 // #define TEMPFANDOFF 30.0  
 // #define TEMPFANON 50.0  
 
-#define TEMPLEDOFF 50.0 // o circuito nao deve chegar a temperatura de 70°, as saidas serao desligadas
-#define TEMPLEDON 45.0  // temperatura de 60° aceita'vel no funcionamento normal
+#define TEMPLEDOFF 70.0 // os LEDs serao desligados se chegar a temperatura de 70°
+#define TEMPLEDON 60.0  // temperatura de 60° aceita'vel, o sistema vota a operar normalmente
 
 #define _CONTTEST 2 // usar para definir o numero de testes a serem realizados
 
@@ -107,7 +107,7 @@ uint8_t convertMinuteIndexSegment (uint8_t minutes, uint8_t timeAdvance) {
  * 5 a 9 = 1
  * 10 a 14 = 2
  * 
- *o retorno dessa fincao, sera usado como indice do vetor outMapSeg[]
+ *o retorno dessa funcao, sera usado como indice do vetor outMapSeg[]
  */
 uint8_t convertHourIndexSegment (uint8_t hours, uint8_t timeAdvance) {
   uint8_t indexSegment = 255; /* used to return */
