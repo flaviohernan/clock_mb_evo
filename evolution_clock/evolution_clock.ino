@@ -21,7 +21,7 @@
 #undef LEDTEST // comentar essa linha para habilitar o teste inicial do LEDs
 
 #define LEDSTRESSTEST
-//#undef LEDSTRESSTEST
+#undef LEDSTRESSTEST
 
 
 RTC_DS3231 rtc;
@@ -539,7 +539,8 @@ uint8_t SetParameter(RTC_DS3231& rtc) {
     contTest = _CONTTEST; // contador do teste dos LEDs
     
   }
-
+  
+#ifdef LEDSTRESSTEST
   if (commandType == "DCBA") {
     allLEDon = 1;
   }
@@ -547,6 +548,8 @@ uint8_t SetParameter(RTC_DS3231& rtc) {
   if (commandType == "ABCD") {
     allLEDon = 0;
   }
+#endif
+
   return EXIT_SUCCESS;
 }
 
