@@ -20,11 +20,18 @@
 #define LEDTEST 
 #undef LEDTEST // comentar essa linha para habilitar o teste inicial do LEDs
 
+#define LEDSTRESSTEST
+//#undef LEDSTRESSTEST
+
 
 RTC_DS3231 rtc;
 DateTime now;
 
 uint8_t contTestLED, contTest = 0; //apenas para teste dos LEDs
+
+#ifdef LEDSTRESSTEST
+uint8_t allLEDon = 0; 
+#endif
 
 
 /*
@@ -244,6 +251,13 @@ uint8_t showOutPins ( uint8_t indexUpper, uint8_t indexLower, float temp) {
   uint8_t aux = 0;
   uint8_t xua = 0;
   uint8_t cont = 0;
+
+#ifdef LEDSTRESSTEST
+  if (allLEDon == 1) 
+  {
+    indexLower = indexUpper = 13;
+  }
+#endif
 
   if ( temp <= TEMPLEDON )
   {
@@ -526,6 +540,13 @@ uint8_t SetParameter(RTC_DS3231& rtc) {
     
   }
 
+  if (commandType == "DCBA") {
+    allLEDon = 1;
+  }
+
+  if (commandType == "ABCD") {
+    allLEDon = 0;
+  }
   return EXIT_SUCCESS;
 }
 
