@@ -11,8 +11,8 @@
 // #define TEMPFANDOFF 30.0  
 // #define TEMPFANON 50.0  
 
-#define TEMPLEDOFF 70.0 // os LEDs serao desligados se chegar a temperatura de 70°
-#define TEMPLEDON 60.0  // temperatura de 60° aceita'vel, o sistema vota a operar normalmente
+#define TEMPLEDOFF 65.0 // os LEDs serao desligados se chegar a temperatura de 65°
+#define TEMPLEDON 55.0  // temperatura de 55° aceita'vel, o sistema vota a operar normalmente
 
 #define _CONTTEST 2 // usar para definir o numero de testes a serem realizados
 
@@ -42,9 +42,9 @@ uint8_t allLEDon = 0;
 float rtcTemp = TEMPLEDOFF; 
 
 /*
- * Guarda o estado das saidas, caso alcance a temperature de 70°
+ * Guarda o estado das saidas, caso alcance a temperature de 65°
  * essa variavel fica como FALSE.
- * caso a temperatura diminua para 60° ela fica em TRUE
+ * caso a temperatura diminua para 55° ela fica em TRUE
  *
 */
 uint8_t outputState = true; 
@@ -203,7 +203,7 @@ uint8_t showOutLCD (LiquidCrystal_I2C lcd, uint8_t indexUpper, uint8_t indexLowe
 
   /*
    * Se o sistema estiver com temperatura alta ,
-   * maior que 70°C, vai mostrar uma mensagem no LCD
+   * maior que 65°C, vai mostrar uma mensagem no LCD
    * "Alta Temp"
    * ou se anteriormente a maxima temperatura havia 
    * sido alcancada
